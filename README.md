@@ -7,8 +7,8 @@ This project is built to manage employee training data. It includes a web interf
 - Upload training data via a Flask web page
 - Clean and transform CSV using Python ETL
 - Store data in MySQL database
-- Send daily email summary of training data
-- Ready for automation using Airflow (DAGs)
+- Automatically send daily email summary of training data
+  
 
 ## 🛠️ Tech Stack
 
@@ -22,16 +22,9 @@ This project is built to manage employee training data. It includes a web interf
 
 ## 📂 Project Structure
 
-> Config.py (For MYSQL connection)
+> Config.py (To retrive all the secured file using username and password)
 > FLASK with ETL.PY (For FLASK with ETL Code)
 > Templates > Uploads.html (For FLASK upload webpage)
 > Daily_training_email.py (To send a automatic email)
-
-
-## 📦 Setup Instructions
-
-1. **Clone the repo**  
-   ```bash
-   git clone https://github.com/Venkatkvk96/Training-data.git
-   cd Training-data
+> Export.py (To export the file to local drive from the database)
 
