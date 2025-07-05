@@ -4,12 +4,13 @@ from flask import Flask, render_template, request, redirect, flash
 from flask_mysqldb import MySQL
 import csv
 import os
+import config
 
 # 2. App Configuration Block:
 
 app = Flask(__name__)
-app.config.from_pyfile('config.py')
-app.config['SECRET_KEY'] = 'your_secret_key'
+app.config.from_object(config)
+mysql = MySQL(app)
 
 mysql = MySQL(app)
 
