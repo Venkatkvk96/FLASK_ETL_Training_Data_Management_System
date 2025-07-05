@@ -2,13 +2,13 @@ from flask import Flask, render_template, request, redirect, flash
 from flask_mysqldb import MySQL
 import csv
 import os
-from dateutil import parser  # Smart date parser
+from dateutil import parser # Smart date parser
+import config
 
 # --- 1. Flask App Configuration ---
 
 app = Flask(__name__)
-app.config.from_pyfile('config.py')
-app.config['SECRET_KEY'] = 'your_secret_key'
+app.config.from_object(config)
 mysql = MySQL(app)
 
 # Ensure upload folder exists

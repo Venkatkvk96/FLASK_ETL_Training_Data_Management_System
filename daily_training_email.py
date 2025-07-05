@@ -2,24 +2,26 @@ import pandas as pd
 import pymysql
 import smtplib
 import warnings
-warnings.filterwarnings("ignore", category=UserWarning, module="pandas.io.sql")
 from email.message import EmailMessage
 from email.utils import formatdate
 from email.mime.application import MIMEApplication
+from config import MYSQL_HOST, MYSQL_USER, MYSQL_PASSWORD, MYSQL_DB, EMAIL_USER, EMAIL_PASSWORD
+
+warnings.filterwarnings("ignore", category=UserWarning, module="pandas.io.sql")
 
 # --- DB Connection ---
 connection = pymysql.connect(
-    host="localhost",
-    user="root",
-    password="12345",  # 🔁 Replace with your MySQL password
-    database="training"
+    host=MYSQL_HOST,
+    user=MYSQL_USER,
+    password=MYSQL_PASSWORD,
+    database=MYSQL_DB
 )
 
 # --- Fetch Today's Training Data ---
 query = """
 SELECT Training_Date, Department, Course, Training_Mode, Training_Hours
 FROM Employee_Details
-WHERE Training_Date = '2025-06-20';
+WHERE Training_Date = CURDATE();  -- Use today dynamically
 """
 
 df = pd.read_sql(query, connection)
@@ -28,8 +30,8 @@ connection.close()
 # --- Prepare Email ---
 msg = EmailMessage()
 msg['Subject'] = "📊 Daily Training Report"
-msg['From'] = "syrma.venkat@gmail.com"         # 🔁 Your email
-msg['To'] = "venkatkvk96@gmail.com"             # 🔁 Recipient(s)
+msg['From'] = EMAIL_USER
+msg['To'] = "venkatkvk96@gmail.com"  # You can make this dynamic too
 msg['Date'] = formatdate(localtime=True)
 
 # Handle empty data
@@ -66,7 +68,7 @@ else:
 
 # --- Send Email (Gmail SMTP) ---
 with smtplib.SMTP_SSL('smtp.gmail.com', 465) as server:
-    server.login("syrma.venkat@gmail.com", "rexfyqxitgqfylqp")  # 🔁 Use Gmail app password
+    server.login(EMAIL_USER, EMAIL_PASSWORD)
     server.send_message(msg)
 
 print("✅ Email sent successfully.")
