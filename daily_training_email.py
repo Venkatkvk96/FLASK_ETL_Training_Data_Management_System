@@ -21,7 +21,7 @@ connection = pymysql.connect(
 query = """
 SELECT Training_Date, Department, Course, Training_Mode, Training_Hours
 FROM Employee_Details
-WHERE Training_Date = CURDATE();  -- Use today dynamically
+WHERE Training_Date = '2025-06-27';  -- Use today dynamically
 """
 
 df = pd.read_sql(query, connection)
@@ -41,7 +41,7 @@ if df.empty:
     <html><body>
     <p>Hello Team,</p>
     <p>No training sessions were recorded for today.</p>
-    <p>Regards,<br>Your Automated Training System</p>
+    <p>Regards,<br>HRT Automated System</p>
     </body></html>
     """, subtype='html')
 else:
@@ -56,7 +56,7 @@ else:
     <p>Hello Team,</p>
     <p>Here is the training summary for today:</p>
     {html_table}
-    <p>Regards,<br>Your Automated Training System</p>
+    <p>Regards,<br>HRT Automated System</p>
     </body></html>
     """, subtype='html')
 

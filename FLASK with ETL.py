@@ -1,8 +1,10 @@
 from flask import Flask, render_template, request, redirect, flash
 from flask_mysqldb import MySQL
-import csv
 import os
-from dateutil import parser # Smart date parser
+import csv
+import pandas as pd
+from dateutil import parser
+from werkzeug.utils import secure_filename
 import config
 
 # --- 1. Flask App Configuration ---
@@ -11,30 +13,42 @@ app = Flask(__name__)
 app.config.from_object(config)
 mysql = MySQL(app)
 
-# Ensure upload folder exists
-os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+# --- 1.1 Ensure Upload Folder Exists ---
+def ensure_upload_folder(app):
+    os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
 # --- 2. ETL Functions ---
 
-# 2.1 Extract data from uploaded CSV file
+# 2.1 Extract data from uploaded CSV or Excel file
 def extract_data(filepath):
-    with open(filepath, 'r', encoding='utf-8') as f:
-        reader = csv.reader(f)
-        next(reader)  # Skip header row
-        return list(reader)
+    _, ext = os.path.splitext(filepath.lower())
 
-# 2.2 Transform data (clean/format dates)
+    if ext == '.csv':
+        with open(filepath, 'r', encoding='utf-8') as f:
+            reader = csv.reader(f)
+            next(reader, None)  # Skip header if present
+            return list(reader)
+    elif ext in ('.xls', '.xlsx'):
+        df = pd.read_excel(filepath)
+        return df.values.tolist()
+    else:
+        raise ValueError(f"Unsupported file type: {ext}")
+
+# ✅ 2.2 Transform data (clean/format dates) - safer version
 def transform_data(data):
     transformed = []
     for row in data:
         try:
-            # Convert various date formats to YYYY-MM-DD (for MySQL)
-            parsed_date = parser.parse(row[4])
-            row[4] = parsed_date.strftime("%Y-%m-%d")
-            transformed.append(row)
+            # Safe check before trying to parse date
+            if len(row) > 4 and row[4] and isinstance(row[4], str):
+                parsed_date = parser.parse(row[4])
+                row[4] = parsed_date.strftime("%Y-%m-%d")
+                transformed.append(row)
+            else:
+                print(f"Skipped row due to missing or invalid date format: {row}")
         except Exception as e:
-            print(f"Skipped row due to invalid date: {row[4]} --> {e}")
-            continue  # Skip row if date can't be parsed
+            print(f"Skipped row due to parsing error: {row[4]} --> {e}")
+            continue
     return transformed
 
 # 2.3 Load data into MySQL
@@ -74,15 +88,21 @@ def upload_file():
         return redirect('/')
 
     file = request.files['file']
-    filepath = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
+    filename = secure_filename(file.filename)
+    ensure_upload_folder(app)
+
+    filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
     file.save(filepath)
 
-    # Run ETL process
-    raw_data = extract_data(filepath)
-    cleaned_data = transform_data(raw_data)
-    load_data(cleaned_data)
+    try:
+        # Run ETL process
+        raw_data = extract_data(filepath)
+        cleaned_data = transform_data(raw_data)
+        load_data(cleaned_data)
+        flash('File uploaded and data inserted successfully!')
+    except Exception as e:
+        flash(f'Error processing file: {e}')
 
-    flash('File uploaded and data inserted successfully!')
     return redirect('/')
 
 # --- 4. Run Flask App ---
