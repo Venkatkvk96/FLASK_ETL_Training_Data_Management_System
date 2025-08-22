@@ -21,7 +21,7 @@ connection = pymysql.connect(
 query = """
 SELECT Training_Date, Department, Course, Training_Mode, Training_Hours
 FROM Employee_Details
-WHERE Training_Date = '2025-06-27';  -- Use today dynamically
+WHERE Training_Date = '2025-06-27';
 """
 
 df = pd.read_sql(query, connection)
@@ -29,9 +29,9 @@ connection.close()
 
 # --- Prepare Email ---
 msg = EmailMessage()
-msg['Subject'] = "📊 Daily Training Report"
+msg['Subject'] = "Daily Training Report"
 msg['From'] = EMAIL_USER
-msg['To'] = "venkatkvk96@gmail.com"  # You can make this dynamic too
+msg['To'] = "venkatkvk96@gmail.com"
 msg['Date'] = formatdate(localtime=True)
 
 # Handle empty data
@@ -71,4 +71,4 @@ with smtplib.SMTP_SSL('smtp.gmail.com', 465) as server:
     server.login(EMAIL_USER, EMAIL_PASSWORD)
     server.send_message(msg)
 
-print("✅ Email sent successfully.")
+print("Email sent successfully.")

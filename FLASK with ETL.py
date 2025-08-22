@@ -34,7 +34,7 @@ def extract_data(filepath):
     else:
         raise ValueError(f"Unsupported file type: {ext}")
 
-# ✅ 2.2 Transform data (clean/format dates) - safer version
+# 2.2 Transform data (clean/format dates)
 def transform_data(data):
     transformed = []
     for row in data:
