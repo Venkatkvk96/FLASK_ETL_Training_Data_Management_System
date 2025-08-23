@@ -7,19 +7,19 @@ from dateutil import parser
 from werkzeug.utils import secure_filename
 import config
 
-# --- 1. Flask App Configuration ---
+# 1. Flask App Configuration
 
 app = Flask(__name__)
 app.config.from_object(config)
 mysql = MySQL(app)
 
-# --- 1.1 Ensure Upload Folder Exists ---
+# Ensure Upload Folder Exists
 def ensure_upload_folder(app):
     os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
-# --- 2. ETL Functions ---
+# 2. ETL Functions
 
-# 2.1 Extract data from uploaded CSV or Excel file
+
 def extract_data(filepath):
     _, ext = os.path.splitext(filepath.lower())
 
@@ -34,7 +34,7 @@ def extract_data(filepath):
     else:
         raise ValueError(f"Unsupported file type: {ext}")
 
-# 2.2 Transform data (clean/format dates)
+
 def transform_data(data):
     transformed = []
     for row in data:
@@ -51,7 +51,7 @@ def transform_data(data):
             continue
     return transformed
 
-# 2.3 Load data into MySQL
+
 def load_data(rows):
     cur = mysql.connection.cursor()
     query = """
@@ -75,7 +75,7 @@ def load_data(rows):
     mysql.connection.commit()
     cur.close()
 
-# --- 3. Flask Routes ---
+# 3. Flask Routes
 
 @app.route('/')
 def form():
@@ -105,7 +105,7 @@ def upload_file():
 
     return redirect('/')
 
-# --- 4. Run Flask App ---
+# 4. Run Flask App
 
 if __name__ == '__main__':
     app.run(debug=True)

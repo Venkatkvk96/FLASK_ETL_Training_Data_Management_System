@@ -9,7 +9,7 @@ from config import MYSQL_HOST, MYSQL_USER, MYSQL_PASSWORD, MYSQL_DB, EMAIL_USER,
 
 warnings.filterwarnings("ignore", category=UserWarning, module="pandas.io.sql")
 
-# --- DB Connection ---
+# DB Connection
 connection = pymysql.connect(
     host=MYSQL_HOST,
     user=MYSQL_USER,
@@ -17,7 +17,7 @@ connection = pymysql.connect(
     database=MYSQL_DB
 )
 
-# --- Fetch Today's Training Data ---
+# Fetch Today's Training Data
 query = """
 SELECT Training_Date, Department, Course, Training_Mode, Training_Hours
 FROM Employee_Details
@@ -27,7 +27,7 @@ WHERE Training_Date = '2025-06-27';
 df = pd.read_sql(query, connection)
 connection.close()
 
-# --- Prepare Email ---
+# Prepare Email
 msg = EmailMessage()
 msg['Subject'] = "Daily Training Report"
 msg['From'] = EMAIL_USER
@@ -66,7 +66,7 @@ else:
         part['Content-Disposition'] = 'attachment; filename="Training_Report.xlsx"'
         msg.attach(part)
 
-# --- Send Email (Gmail SMTP) ---
+# Send Email (Gmail SMTP)
 with smtplib.SMTP_SSL('smtp.gmail.com', 465) as server:
     server.login(EMAIL_USER, EMAIL_PASSWORD)
     server.send_message(msg)
