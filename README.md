@@ -8,7 +8,7 @@ This repository is part of the story series: "Solving Real Workplace Problems wi
 
 
 
-# Project Overview
+## Project Overview
 
 
 
@@ -54,7 +54,7 @@ The system allows users to upload training data files and automatically store th
 
 
 
-# How It Works:
+## How It Works:
 
 * User uploads a training data file
 * Flask processes the file
@@ -63,7 +63,7 @@ The system allows users to upload training data files and automatically store th
 
 
 
-# Learning Purpose:
+## Learning Purpose:
 
 
 
