@@ -31,7 +31,7 @@ connection.close()
 msg = EmailMessage()
 msg['Subject'] = "Daily Training Report"
 msg['From'] = EMAIL_USER
-msg['To'] = "venkatkvk96@gmail.com"
+msg['To'] = "v123@gmail.com"
 msg['Date'] = formatdate(localtime=True)
 
 # Handle empty data
